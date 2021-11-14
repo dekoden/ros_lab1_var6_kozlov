@@ -1,0 +1,1 @@
+# ros_lab1_var6_kozlov
