@@ -1,0 +1,5 @@
+<launch>
+	<node pkg="lab1_solver_sle" type="solver_sle_node" name="lab1_solver_sle" output="screen">
+		<rosparam command="load" file="$(find lab1_solver_sle)/config/params.yaml"/>
+	</node>
+</launch>
