@@ -32,7 +32,7 @@ bool solve(lab1_solver_sle::solve_sle::Request  &req,
     return true;
   }
   // No solutions
-  if (fabs(ae - bd) < eps && fabs(af - cd) > eps) // ae == bd && af != cd
+  if (fabs(ae - bd) < eps && fabs(af - cd) > eps) // ae != bd && af != cd
   {
     g_publisher.publish(msg);
     return true;
