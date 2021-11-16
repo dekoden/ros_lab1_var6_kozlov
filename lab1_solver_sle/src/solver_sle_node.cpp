@@ -22,7 +22,7 @@ bool solve(lab1_solver_sle::solve_sle::Request  &req,
   float ce = req.c * req.e;
 
   // One solution
-  if (fabs(ae - bd) > eps) // ae == bd
+  if (fabs(ae - bd) > eps) // ae != bd
   {
     res.roots.push_back((ce - bf) / (ae - bd));
     res.roots.push_back((af - cd) / (ae - bd));
@@ -32,7 +32,7 @@ bool solve(lab1_solver_sle::solve_sle::Request  &req,
     return true;
   }
   // No solutions
-  if (fabs(ae - bd) < eps && fabs(af - cd) > eps) // ae != bd && af != cd
+  if (fabs(ae - bd) < eps && fabs(af - cd) > eps) // ae == bd && af != cd
   {
     g_publisher.publish(msg);
     return true;
