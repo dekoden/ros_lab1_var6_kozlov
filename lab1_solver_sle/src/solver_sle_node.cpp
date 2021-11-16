@@ -4,7 +4,7 @@
 #include "std_msgs/Float32MultiArray.h"
 
 ros::Publisher g_publisher;
-ros:: Subscriber g_subscriber;
+ros::Subscriber g_subscriber;
 ros::ServiceServer g_service;
 
 bool solve(lab1_solver_sle::solve_sle::Request  &req,
@@ -12,33 +12,54 @@ bool solve(lab1_solver_sle::solve_sle::Request  &req,
 {
   std_msgs::Float32MultiArray msg;
 
-  float det = req.a * req.e - req.b * req.d;
-  if (fabs(det) < 0.001)
+  float eps = 1e-5;
+
+  float ae = req.a * req.e;
+  float bd = req.b * req.d;
+  float af = req.a * req.f;
+  float cd = req.c * req.d;
+  float bf = req.b * req.f;
+  float ce = req.c * req.e;
+
+  // One solution
+  if (fabs(ae - bd) > eps) // ae == bd
+  {
+    res.roots.push_back((ce - bf) / (ae - bd));
+    res.roots.push_back((af - cd) / (ae - bd));
+    msg.data.push_back(res.roots[0]);
+    msg.data.push_back(res.roots[1]);
+    g_publisher.publish(msg);
+    return true;
+  }
+  // No solutions
+  if (fabs(ae - bd) < eps && fabs(af - cd) > eps) // ae == bd && af != cd
   {
     g_publisher.publish(msg);
     return true;
   }
-  float det_x = req.c * req.e - req.b * req.f;
-  float det_y = req.a * req.f - req.c * req.d;
-  res.roots.push_back(det_x / det);
-  res.roots.push_back(det_y / det);
-
+  // Infinite number of solutions
+  res.roots.push_back(INFINITY);
   msg.data.push_back(res.roots[0]);
-  msg.data.push_back(res.roots[1]);
   g_publisher.publish(msg);
-
   return true;
 }
 
 void callback(const std_msgs::Float32MultiArray::ConstPtr& msg)
 {
+   // One solution
+  if (msg->data.size() == 2)
+  {
+    ROS_INFO("x = %.2f, y = %.2f", msg->data[0], msg->data[1]);
+  }
+  // Infinite number of solutions
+  if (msg->data.size() == 1 && msg->data[0] == INFINITY)
+  {
+    ROS_INFO("Infinite number of solutions");
+  }
+  // No solutions
   if (msg->data.empty())
   {
     ROS_INFO("No solutions");
-  }
-  else
-  {
-    ROS_INFO("x = %.2f, y = %.2f", msg->data[0], msg->data[1]);
   }
 }
 
